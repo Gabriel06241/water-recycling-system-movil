@@ -1,0 +1,8 @@
+{
+  "name": "water-recycling-system-movil",
+  "app_id": "",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}
