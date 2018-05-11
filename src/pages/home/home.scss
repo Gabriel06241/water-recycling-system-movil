@@ -1,3 +1,23 @@
-page-home {
+.otp {
+    color: darkgray;
+    border-style: none;
+    width: 60px;
+    height: 60px;
+    font-size: 50px;
+}
 
+.table-surround-td {
+    border: 2px solid darkgray
+}
+
+.table-surround {
+    border-collapse: collapse;
+
+    max-width: 300px; 
+    width:100%; 
+    margin: auto; 
+    text-align: center;
+}    
+.h1-header{
+    margin-bottom: 20vh;
 }

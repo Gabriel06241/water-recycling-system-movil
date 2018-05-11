@@ -1,14 +1,36 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Ionic Blank
+      RAG - Reciclaje de aguas grises
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  The world is your oyster.
+  <h1 class="h1-header">Enlaza tu dispositivo</h1>
+  <table class="table-surround">
+    <tr>
+      <td class="table-surround-td">
+        <ion-input [(ngModel)]="code.A" type="number" #otp1 class="otp" pattern="[0-9]{6}" maxlength="1" size="1" (keyup)="next(otp2)">
+        </ion-input>
+      </td>
+      <td class="table-surround-td">
+        <ion-input [(ngModel)]="code.B" type="number" #otp2 class="otp" pattern="[0-9]{6}" maxlength="1" size="1" (keyup)="next(otp3)">
+        </ion-input>
+      </td>
+      <td class="table-surround-td">
+        <ion-input [(ngModel)]="code.C" type="number" #otp3 class="otp" pattern="[0-9]{6}" maxlength="1" size="1" (keyup)="next(otp4)">
+        </ion-input>
+      </td>
+      <td class="table-surround-td">
+        <ion-input [(ngModel)]="code.D" type="number" #otp4 class="otp" pattern="[0-9]{6}" maxlength="1" size="1" (keyup)="findCode()">
+        </ion-input>
+      </td>
+    </tr>
+  </table>
   <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
+    <i>
+      <h6>*El código lo encuentras en el display de tu dispositivo</h6>
+    </i>
   </p>
 </ion-content>
