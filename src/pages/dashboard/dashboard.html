@@ -14,5 +14,36 @@
 
 
 <ion-content padding>
+  {{id}}
+  <!--<pre>{{ data | json }}</pre>-->
+
+  <ion-card>
+
+    <ion-item>
+      <ion-icon name="wifi" item-start></ion-icon>
+      Dirección IP
+      <ion-badge item-end>{{data.ip}}</ion-badge>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="calendar" item-start></ion-icon>
+      Registrado
+      <ion-badge item-end>{{data.created}}</ion-badge>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="water" item-start></ion-icon>
+      Ciclos Completados
+      <ion-badge item-end>{{data.recyclingProcessList.length}}</ion-badge>
+    </ion-item>
+  </ion-card>
+  <ion-content padding class="action-sheets-basic-page">
+    <button ion-button *ngIf="!data.state" color="danger" block (click)="estadoEnlaceActionSheet()">
+      Error al enlazar
+    </button>
+    <button *ngIf="data.state" ion-button color="secondary" block (click)="estadoEnlaceActionSheet()">
+      Enlazado
+    </button>
+  </ion-content>
+  
+  <!--<button ion-button block (click)="loadProfile()">Consultar</button>-->
 
 </ion-content>
