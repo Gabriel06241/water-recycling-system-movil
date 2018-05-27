@@ -1,22 +1,15 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, LoadingController, ToastController } from 'ionic-angular';
-import { ActionSheetController } from 'ionic-angular';
+import { ActionSheetController, Events } from 'ionic-angular';
 
 import { HTTP } from '@ionic-native/http';
 
 import { Device } from '../../model/device.model';
 import { Storage } from '@ionic/storage';
 import { HomePage } from '../home/home';
+/*import { FillingPage } from '../filling/filling';*/
 
-
-/**
- * Generated class for the DashboardPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 HTTP.getPluginRef = () => "cordova.plugin.http";
-
 
 @IonicPage()
 @Component({
@@ -32,9 +25,15 @@ export class DashboardPage {
     "code": "",
     "ip": "",
     "created": "",
-    "recyclingProcessList": [],
+    "recyclingProcessList": 0,
+    "recyclingProcessCount" : 0,
     "state": false
   }
+
+  OnProcess = false;
+  task;
+  processId = "";
+
   constructor(public navCtrl: NavController,
     public loadingCtrl: LoadingController,
     public navParams: NavParams,
@@ -42,13 +41,67 @@ export class DashboardPage {
     private storage: Storage,
     public alertCtrl: AlertController,
     private toastCtrl: ToastController,
-    public actionSheetCtrl: ActionSheetController) {
+    public actionSheetCtrl: ActionSheetController,
+    public events: Events) {
+
     this.id = navParams.get('id');
-    this.loadProfile();
+    this.nuevasNotificaciones();
+
+    this.storage.get('user').then((val) => {
+      console.log(val);
+
+      if (val !== null) {
+        this.id = val;
+        this.loadProfile();
+      }
+    });
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad DashboardPage');
+  }
+
+  nuevasNotificaciones() {
+    this.events.subscribe('app:newToken', (token, time) => {
+      console.log("app:newToken");
+      // user and time are the same arguments passed in `events.publish(user, time)`
+      console.log('app:newToken', JSON.stringify(token), 'at', time);
+
+      this.registerNewToken(token);
+    });
+  }
+
+  registerNewToken(token) {
+    console.log("registerNewToken", token);
+    this.storage.set('token', token);
+
+    /*http://127.0.0.1:5000/api/devices/7021/notifications?token=*/
+    this.storage.get('user').then((fullCode) => {
+      console.log(fullCode);
+
+      if (fullCode !== null) {
+        console.log("registerNewToken.fullCode", fullCode);
+        let url = 'http://wr.ramirobedoya.me:5000/api/Devices/'
+          + fullCode + '/notifications?token=' + token;
+        console.log(url);
+        this.header['Cache-Control'] = 'no-cache';
+        this.http.get(
+          url,
+          {},
+          this.header
+        ).then(res => {
+          console.log(JSON.stringify(res));
+          console.log("res.data", );
+        }).catch(e => {
+          console.log("error");
+          console.log(JSON.stringify(e));
+        });
+      } else {
+        console.log("registerNewToken.SinCodigo", token);
+
+        //Aquí, Cuando ingrese a la vista. Verificar si está registrado
+      }
+    });
   }
 
   loadProfile() {
@@ -58,47 +111,75 @@ export class DashboardPage {
     });
 
     loading.present();
-    //http://water-recycling.eastus.cloudapp.azure.com:5000/api/Devices?id=3481
-    let url = 'http://40.114.106.53:5000/api/Devices?id=' + this.id;
-    console.log(url);
+    let url = 'http://wr.ramirobedoya.me:5000/api/Devices?id=' + this.id;
     this.header['Cache-Control'] = 'no-cache';
     this.http.get(
       url,
       {},
       this.header
     ).then(res => {
-        console.log(JSON.stringify(res));
-        console.log("res.data", );
-        loading.dismiss();
+      console.log(url, JSON.stringify(res));
 
-        var r = JSON.parse(res.data)[0];
-        console.log("r", JSON.stringify(r[0]));
+      var r = JSON.parse(res.data)[0];
+      this.data = {
+        id: r.id,
+        code: r.code,
+        ip: r.ip,
+        created: r.created,
+        recyclingProcessList: r.recyclingProcessList,
+        recyclingProcessCount: r.recyclingProcessCount,
+        state: r.state
+      }
 
-        this.data = {
-          id: r.id,
-          code: r.code,
-          ip: r.ip,
-          created: r.created,
-          recyclingProcessList: r.recyclingProcessList,
-          state: r.state
-        }
-
-        console.log("data", JSON.stringify(this.data));
-       
+      loading.dismiss();
+      this.loadNewProcess();
     }).catch(e => {
-      console.log("error");
-      console.log(JSON.stringify(e));
-
-      console.log("err.error", e.error);
-      if(e.error !== undefined && e.error !== ''){
+      console.log("error", JSON.stringify(e));
+      if (e.error !== undefined && e.error !== '') {
         this.alertMessage(e.error, "Error");
-      }else {
+      } else {
         this.alertMessage("Se ha producido un incidente al cargar el perfil, intentalo más tarde", "Error de conexión");
       }
       loading.dismiss();
-
     });
+  }
+ 
+  loadNewProcess() {
 
+    this.OnProcess = false;
+    console.log("this.OnProcess", this.OnProcess);
+
+    this.task = setInterval(() => {
+      this.refreshProcess();
+    }, 1000);
+  }
+
+  refreshProcess() {
+    let url = 'http://wr.ramirobedoya.me:5000/api/devices/' + this.id + "/lite";
+    this.header['Cache-Control'] = 'no-cache';
+    this.http.get(
+      url,
+      {},
+      this.header
+    ).then(res => {
+      var r = JSON.parse(res.data);
+      console.log(url, JSON.stringify(r));
+
+      if (this.data.recyclingProcessList !== r.recyclingProcessCount) {
+        this.OnProcess = true;
+        clearInterval(this.task);
+        this.processId = r.lastProcessId;
+      }
+      
+      
+    }).catch(e => {
+      console.log("error");
+      console.log(JSON.stringify(e));
+    });
+  }
+
+  loadEvent() {
+    this.navCtrl.push("FillingPage", { ID: this.processId })
   }
 
   alertMessage(mensaje, titulo) {
@@ -131,7 +212,7 @@ export class DashboardPage {
 
     loading.present();
     //http://water-recycling.eastus.cloudapp.azure.com:5000/api/Devices?id=3481
-    let url = 'http://40.114.106.53:5000/api/Devices/' + this.id + '/remove';
+    let url = 'http://wr.ramirobedoya.me:5000/api/Devices/' + this.id + '/remove';
     console.log(url);
     this.header['Cache-Control'] = 'no-cache';
     this.http.get(
@@ -154,9 +235,11 @@ export class DashboardPage {
     }).catch(e => {
       console.log("error");
       console.log(JSON.stringify(e));
-      if(e.error !== undefined && e.error !== ''){
+      if (e.error !== undefined && e.error !== '') {
         this.alertMessage(e.error, "Error");
-      }else {
+        this.storage.set('user', null);
+        this.navCtrl.setRoot(HomePage);
+      } else {
         this.alertMessage("Se ha producido un incidente al eliminar el perfil, intentalo más tarde", "Error de conexión");
       }
       loading.dismiss();
@@ -173,6 +256,11 @@ export class DashboardPage {
           role: 'destructive',
           handler: () => {
             this.eliminarEnlace();
+          }
+        },{
+          text: 'Refrescar',
+          handler: () => {
+            this.loadProfile();
           }
         }, {
           text: 'Cancel',

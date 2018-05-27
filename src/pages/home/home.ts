@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, LoadingController, AlertController, ToastController } from 'ionic-angular';
+import { NavController, LoadingController, AlertController, ToastController, Events } from 'ionic-angular';
 
 import { HTTP } from '@ionic-native/http';
 import { Storage } from '@ionic/storage';
@@ -24,9 +24,55 @@ export class HomePage {
     private http: HTTP,
     private storage: Storage,
     public alertCtrl: AlertController,
-    private toastCtrl: ToastController) {
+    private toastCtrl: ToastController,
+    public events: Events) {
 
     this.resetCode();
+    this.nuevasNotificaciones();
+
+    
+  }
+
+  nuevasNotificaciones() {
+    this.events.subscribe('app:newToken', (token, time) => {
+      console.log("app:newToken");
+      // user and time are the same arguments passed in `events.publish(user, time)`
+      console.log('app:newToken', JSON.stringify(token), 'at', time);
+      this.storage.set('token', token);
+      this.registerNewToken(token);
+    });
+  }
+
+  registerNewToken(token) {
+    console.log("registerNewToken", token);
+
+    /*http://127.0.0.1:5000/api/devices/7021/notifications?token=*/
+    this.storage.get('user').then((fullCode) => {
+      console.log(fullCode);
+
+      if (fullCode !== null) {
+        console.log("registerNewToken.fullCode", fullCode);
+        let url = 'http://wr.ramirobedoya.me:5000/api/Devices/'
+          + fullCode + '/notifications?token=' + token;
+        console.log(url);
+        this.header['Cache-Control'] = 'no-cache';
+        this.http.get(
+          url,
+          {},
+          this.header
+        ).then(res => {
+          console.log(JSON.stringify(res));
+          console.log("res.data", );
+        }).catch(e => {
+          console.log("error");
+          console.log(JSON.stringify(e));
+        });
+      } else {
+        console.log("registerNewToken.SinCodigo");
+
+        //Aquí, Cuando ingrese a la vista. Verificar si está registrado
+      }
+    });
   }
 
   ionViewDidLoad() {
@@ -62,13 +108,15 @@ export class HomePage {
 
     loading.present();
 
-    let url = 'http://40.114.106.53:5000/api/devices/' + this.fullCode + '/activate'
+    let url = 'http://wr.ramirobedoya.me:5000/api/devices/' + this.fullCode + '/activate'
+    console.log("url", url);
     this.header['Cache-Control'] = 'no-cache';
     this.http.get(
       url,
       {},
       this.header
     ).then(res => {
+      console.log("resultado de " + url);
       console.log(JSON.stringify(res));
       console.log("res.data",res.data);
       loading.dismiss();
@@ -80,10 +128,22 @@ export class HomePage {
         console.log("Dispositivo activo correctamente");
         this.presentToast("Dispositivo activado correctamente");
         this.storage.set('user', this.fullCode);
-        this.loadProfile();
+        this.storage.get('token').then((token) => {
+
+          console.log("token", token);
+
+          if (token !== null) {
+            this.registerNewToken(token);
+            this.loadProfile();
+          }
+
+        }); 
+
+
       }
  
     }).catch(e => {
+      loading.dismiss();
       console.log("error");
       console.log(JSON.stringify(e));
 
@@ -94,7 +154,7 @@ export class HomePage {
       }else {
         this.alertMessage("Se ha producido un incidente al activar el dispositivo, intentalo más tarde", "Error de conexión");
       }
-      loading.dismiss();
+      
 
     });
 

@@ -3,6 +3,7 @@ export interface Device {
     code: string;
     ip: string;
     created: string;
-    recyclingProcessList: Array<any>;
+    recyclingProcessList: number;
+    recyclingProcessCount: number;
     state: boolean;
 }

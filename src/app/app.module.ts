@@ -8,6 +8,8 @@ import { IonicStorageModule } from '@ionic/storage';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
+import { FCM } from '@ionic-native/fcm';
+
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { HomePage } from '../pages/home/home';
     StatusBar,
     HTTP,
     SplashScreen,
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    FCM
   ]
 })
 export class AppModule { }

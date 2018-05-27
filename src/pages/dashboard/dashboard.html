@@ -14,11 +14,14 @@
 
 
 <ion-content padding>
-  {{id}}
   <!--<pre>{{ data | json }}</pre>-->
 
   <ion-card>
-
+    <ion-item>
+      <ion-icon name="code-working" item-start></ion-icon>
+      Dispositivo
+      <ion-badge item-end>{{data.code}}</ion-badge>
+    </ion-item>
     <ion-item>
       <ion-icon name="wifi" item-start></ion-icon>
       Dirección IP
@@ -32,10 +35,13 @@
     <ion-item>
       <ion-icon name="water" item-start></ion-icon>
       Ciclos Completados
-      <ion-badge item-end>{{data.recyclingProcessList.length}}</ion-badge>
+      <ion-badge item-end>{{data.recyclingProcessCount}}</ion-badge>
     </ion-item>
   </ion-card>
   <ion-content padding class="action-sheets-basic-page">
+      <button ion-button full outline *ngIf="OnProcess" block (click)="loadEvent()">
+          Nuevo proceso en curso {{processId}}
+        </button>
     <button ion-button *ngIf="!data.state" color="danger" block (click)="estadoEnlaceActionSheet()">
       Error al enlazar
     </button>
@@ -43,6 +49,7 @@
       Enlazado
     </button>
   </ion-content>
+
   
   <!--<button ion-button block (click)="loadProfile()">Consultar</button>-->
 

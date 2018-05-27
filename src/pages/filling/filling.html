@@ -7,12 +7,23 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Filling</ion-title>
+    <ion-title>Llenando {{id}}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-
+  <ion-item>
+    <ion-range min="1000" max="2000" step="100" snaps="true" [(ngModel)]="warmth" color="danger">
+      <ion-icon range-left small color="danger" name="thermometer"></ion-icon>
+      <ion-icon range-right color="danger" name="thermometer"></ion-icon>
+    </ion-range>
+  </ion-item>
+ <ion-list inset *ngFor="let item of items;let i=index">
+    <ion-item>
+      <h2>Distancia {{item.distance}}</h2>
+      <p>Turbidez {{item.turbidity}}</p>
+    </ion-item>
+  </ion-list>
 </ion-content>
