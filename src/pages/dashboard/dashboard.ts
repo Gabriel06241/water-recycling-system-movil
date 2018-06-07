@@ -81,7 +81,7 @@ export class DashboardPage {
 
       if (fullCode !== null) {
         console.log("registerNewToken.fullCode", fullCode);
-        let url = 'http://wr.ramirobedoya.me:5000/api/Devices/'
+        let url = 'http://10.10.26.45:5000/api/Devices/'
           + fullCode + '/notifications?token=' + token;
         console.log(url);
         this.header['Cache-Control'] = 'no-cache';
@@ -111,7 +111,7 @@ export class DashboardPage {
     });
 
     loading.present();
-    let url = 'http://wr.ramirobedoya.me:5000/api/Devices?id=' + this.id;
+    let url = 'http://10.10.26.45:5000/api/Devices?id=' + this.id;
     this.header['Cache-Control'] = 'no-cache';
     this.http.get(
       url,
@@ -155,7 +155,7 @@ export class DashboardPage {
   }
 
   refreshProcess() {
-    let url = 'http://wr.ramirobedoya.me:5000/api/devices/' + this.id + "/lite";
+    let url = 'http://10.10.26.45:5000/api/devices/' + this.id + "/lite";
     this.header['Cache-Control'] = 'no-cache';
     this.http.get(
       url,
@@ -212,7 +212,7 @@ export class DashboardPage {
 
     loading.present();
     //http://water-recycling.eastus.cloudapp.azure.com:5000/api/Devices?id=3481
-    let url = 'http://wr.ramirobedoya.me:5000/api/Devices/' + this.id + '/remove';
+    let url = 'http://10.10.26.45:5000/api/Devices/' + this.id + '/remove';
     console.log(url);
     this.header['Cache-Control'] = 'no-cache';
     this.http.get(

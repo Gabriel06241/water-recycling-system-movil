@@ -23,9 +23,11 @@ export class FillingPage {
 
   brightness: number = 20;
   contrast: number = 0;
-  warmth: number = 1300;
+  warmth: number = 0;
   structure: any = { lower: 33, upper: 60 };
   text: number = 0;
+  
+  maxWarmth: number = 0;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -70,7 +72,7 @@ export class FillingPage {
       return;
     }
 
-    let url = 'http://wr.ramirobedoya.me:5000/api/events?id=' + this.id;
+    let url = 'http://10.10.26.45:5000/api/events?id=' + this.id;
     console.log(url);
     this.header['Cache-Control'] = 'no-cache';
     this.http.get(
@@ -79,12 +81,20 @@ export class FillingPage {
       this.header
     ).then(res => {
       try {
+  
+      
         console.log(JSON.stringify(res));
         console.log("res.data", res.data);
         this.items = JSON.parse(res.data);
+        
+        let pro = this.items[0].distance;
+        console.log("pro", pro);
 
-        this.warmth = res.data[res.data.length - 1].Distance;
-        /*.reverse(i => i.captureDate);*/
+        if(this.maxWarmth == 0){
+          this.maxWarmth = pro;
+        }  
+        this.warmth = (pro / this.maxWarmth) * 100;
+        console.log("this.warmth", this.warmth);
       }
       catch (e) {
         console.log(e);

@@ -52,7 +52,7 @@ export class HomePage {
 
       if (fullCode !== null) {
         console.log("registerNewToken.fullCode", fullCode);
-        let url = 'http://wr.ramirobedoya.me:5000/api/Devices/'
+        let url = 'http://10.10.26.45:5000/api/Devices/'
           + fullCode + '/notifications?token=' + token;
         console.log(url);
         this.header['Cache-Control'] = 'no-cache';
@@ -108,7 +108,7 @@ export class HomePage {
 
     loading.present();
 
-    let url = 'http://wr.ramirobedoya.me:5000/api/devices/' + this.fullCode + '/activate'
+    let url = 'http://10.10.26.45:5000/api/devices/' + this.fullCode + '/activate'
     console.log("url", url);
     this.header['Cache-Control'] = 'no-cache';
     this.http.get(

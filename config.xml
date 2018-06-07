@@ -3,7 +3,7 @@
     <name>water-recycling-system-movil</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.0.11:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -90,6 +90,7 @@
     <plugin name="cordova-plugin-advanced-http" spec="^1.11.1" />
     <allow-navigation href="http://192.168.0.108:8100" />
     <allow-navigation href="http://10.13.0.233:8100" />
+    <engine name="android" spec="~7.0.0" />
     <allow-navigation href="http://192.168.43.189:8100" />
     <allow-navigation href="http://10.10.22.91:8101" />
     <allow-navigation href="http://192.168.43.189:8101" />
@@ -103,5 +104,7 @@
     <allow-navigation href="http://192.168.2.1:8100" />
     <allow-navigation href="http://10.13.1.148:8100" />
     <allow-navigation href="http://10.10.29.91:8100" />
-    <engine name="android" spec="7.0.0" />
+    <allow-navigation href="http://10.10.26.45:8100" />
+    <allow-navigation href="http://169.254.141.221:8100" />
+    <allow-navigation href="http://169.254.67.240:8100" />
 </widget>
